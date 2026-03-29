@@ -19,6 +19,44 @@ def train_pca(path_to_csv):
 
     return pca
 
+def visualize_pca(pca):
+    # ---------------------------
+    # Visualization
+    # ---------------------------
+
+    # 1. Explained variance per component
+    plt.figure(figsize=(8, 5))
+    plt.bar(range(1, len(pca.explained_variance_ratio_)+1),
+            pca.explained_variance_ratio_,
+            alpha=0.7,
+            color='skyblue')
+    plt.ylabel('Explained variance ratio')
+    plt.xlabel('Principal component')
+    plt.title('Variance explained by each principal component')
+    plt.show()
+
+    # 2. Cumulative explained variance
+    plt.figure(figsize=(8, 5))
+    plt.plot(range(1, len(pca.explained_variance_ratio_)+1),
+             pca.explained_variance_ratio_.cumsum(),
+             marker='o', linestyle='--', color='orange')
+    plt.ylabel('Cumulative explained variance')
+    plt.xlabel('Number of principal components')
+    plt.title('Cumulative explained variance')
+    plt.grid(True)
+    plt.show()
+
+    # Optional: Project data into first 2 PCs for visualization
+    projected = pd.read_csv("data/pca_transformed.csv").values
+    if projected.shape[1] >= 2:
+        plt.figure(figsize=(6,6))
+        plt.scatter(projected[:,0], projected[:,1], alpha=0.5)
+        plt.xlabel('PC 1')
+        plt.ylabel('PC 2')
+        plt.title('Data projected onto first 2 principal components')
+        plt.grid(True)
+        plt.show()
+
 def apply_pca(pca, path_to_csv, output_filename):
     # Load the raw data
     data_matrix = pd.read_csv(path_to_csv).values
@@ -62,5 +100,6 @@ merge_csvs_for_pca("PATH_TO_FOLDER_WITH_CSV_FILES")
 
 pca = train_pca("data/merged_dataset.csv")
 apply_pca(pca, "data/merged_dataset.csv", "data/pca_transformed.csv")
+visualize_pca(pca)
 
 
